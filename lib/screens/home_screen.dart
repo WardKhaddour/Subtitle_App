@@ -5,15 +5,8 @@ import '../providers/imdb_provider.dart';
 import '../widgets/subtitle_view.dart';
 import '../widgets/search_type.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   static const routeName = '/';
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  String selectedlang = 'ara';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,9 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
                 .toList(),
             onSelected: (value) {
-              setState(() {
-                selectedlang = value;
-              });
+              Provider.of<IMDBProvider>(context, listen: false)
+                  .selectLanguage(value);
             },
           ),
         ],

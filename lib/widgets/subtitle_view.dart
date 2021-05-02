@@ -22,12 +22,13 @@ class SubtitleView extends StatelessWidget {
         15,
       ),
       width: double.infinity,
-      height: 80,
+      height: 70,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          30,
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(30),
+          bottomLeft: Radius.circular(30),
         ),
-        color: Colors.white,
+        color: Colors.grey,
       ),
     );
   }

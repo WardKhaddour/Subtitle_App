@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class StylingContainer extends StatelessWidget {
+class MyContainer extends StatelessWidget {
   final Widget child;
-  StylingContainer({
+  MyContainer({
     this.child,
   });
   @override
