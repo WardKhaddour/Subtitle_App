@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-// import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +13,7 @@ enum SubTypes {
 
 class IMDBProvider with ChangeNotifier {
   String _id;
-  String _error = '';
+  String _error;
   String _language = 'ar';
   String _zipDownloadLink;
   String _subtitlesLink;
@@ -21,9 +21,13 @@ class IMDBProvider with ChangeNotifier {
   bool _hasSub = false;
   bool _isMovie = true;
   SubTypes _searchType = SubTypes.Movie;
-
+  bool _isLoading = false;
   SubTypes get searchType {
     return _searchType;
+  }
+
+  bool get isLoading {
+    return _isLoading;
   }
 
   bool get hasSub {
@@ -52,6 +56,11 @@ class IMDBProvider with ChangeNotifier {
 
   bool get isMovie {
     return _isMovie;
+  }
+
+  void toggleLoading() {
+    _isLoading = !_isLoading;
+    notifyListeners();
   }
 
   void selectLanguage(String lang) {
@@ -101,22 +110,27 @@ class IMDBProvider with ChangeNotifier {
       _hasSub = true;
     } catch (e) {
       _error = e.toString();
-      print(_error);
+      print('get movie sub $_error');
     }
   }
 
   Future<void> getData(String name, String season, String episode) async {
     try {
+      await FlutterDownloader.initialize(
+        debug: true,
+      );
       if (!isMovie && (episode == null || season == null) || name == null) {
         print('erro if statement');
         return;
       }
+      toggleLoading();
       print('getting data');
       await getId(name);
       print('finish getting data');
       _isMovie
           ? await getMovieSub(_id)
           : await getTvShowSub(_id, season, episode);
+      toggleLoading();
       notifyListeners();
     } catch (e) {
       print('error getting data!');
@@ -151,21 +165,55 @@ class IMDBProvider with ChangeNotifier {
   }
 
   Future<void> downloadSub() async {
+    HttpClient httpClient = new HttpClient();
+    File file;
+    String filePath = '';
+    String myUrl = '';
+
     try {
+      print('downloading...');
       String path = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_DOWNLOADS);
-      print('path = $path');
-      final taskId = await FlutterDownloader.enqueue(
-        url: _subtitlesLink,
-        savedDir: path,
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-      print(taskId);
-    } catch (e) {
-      print(e.toString());
-      _error = e.toString();
+      print(1);
+      myUrl = zipDownloadLink + '/';
+      var request = await httpClient.getUrl(Uri.parse(myUrl));
+      print(2);
+
+      var response = await request.close();
+      print(3);
+
+      if (response.statusCode == 200) {
+        var bytes = await consolidateHttpClientResponseBytes(response);
+        print(4);
+
+        filePath = '$path/$_id';
+        file = File(filePath);
+        await file.writeAsBytes(bytes);
+        print(5);
+      } else
+        filePath = 'Error code: ' + response.statusCode.toString();
+    } catch (ex) {
+      filePath = 'Can not fetch url';
     }
+
+    return filePath;
+
+    // try {
+    //   // FlutterDownloader.initialize();
+    //   String path = await ExtStorage.getExternalStoragePublicDirectory(
+    //       ExtStorage.DIRECTORY_DOWNLOADS);
+    //   print('path = $path');
+    //   final taskId = await FlutterDownloader.enqueue(
+    //     url: _subtitlesLink,
+    //     savedDir: path,
+    //     showNotification: true,
+    //     openFileFromNotification: true,
+    //   );
+    //   print(taskId);
+    // } catch (e) {
+    //   print(e.toString());
+    //   _error = e.toString();
+    // }
   }
 
   Future<void> downloadSubZip() async {

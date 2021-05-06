@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/imdb_provider.dart';
+// import 'package:provider/provider.dart';
+// import '../providers/imdb_provider.dart';
 
 class ErrorMessage extends StatelessWidget {
+  final String error;
+  ErrorMessage({@required this.error});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -12,9 +14,7 @@ class ErrorMessage extends StatelessWidget {
           color: Colors.red,
         ),
       ),
-      content: Text(
-        Provider.of<IMDBProvider>(context).error,
-      ),
+      content: Text(error),
       actions: [
         TextButton(
           child: Text('Close.'),
