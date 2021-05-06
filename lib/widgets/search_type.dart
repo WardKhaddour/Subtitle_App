@@ -43,11 +43,19 @@ class SearchType extends StatelessWidget {
                       color: Colors.lightBlueAccent),
                   child: TextButton(
                     onPressed: () {
-                      Provider.of<IMDBProvider>(context, listen: false).error !=
-                              null
-                          ? Provider.of<IMDBProvider>(context, listen: false)
-                              .getData(name, season, episode)
-                          : ErrorMessage();
+                      {
+                        print('searching');
+                        Provider.of<IMDBProvider>(context, listen: false)
+                                    .error !=
+                                null
+                            ? Provider.of<IMDBProvider>(context, listen: false)
+                                .getData(name, season, episode)
+                            : showDialog(
+                                context: context,
+                                builder: (context) => ErrorMessage(),
+                              );
+                        print('finish search');
+                      }
                     },
                     child: Text(
                       'Search',
@@ -113,13 +121,17 @@ class SearchType extends StatelessWidget {
                       child: TextButton(
                         onPressed: () {
                           print('searching');
-                          Provider.of<IMDBProvider>(context, listen: false)
-                                      .error !=
-                                  null
-                              ? Provider.of<IMDBProvider>(context,
-                                      listen: false)
-                                  .getData(name, season, episode)
-                              : showAboutDialog(context: context);
+                          if (Provider.of<IMDBProvider>(context, listen: false)
+                                  .error !=
+                              null) {
+                            Provider.of<IMDBProvider>(context, listen: false)
+                                .getData(name, season, episode);
+                          } else {
+                            print('errorrrrr');
+                            showDialog(
+                                context: context,
+                                builder: (_) => ErrorMessage());
+                          }
                           print('finish search');
                         },
                         child: Text(

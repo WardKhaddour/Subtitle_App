@@ -29,24 +29,28 @@ class HomeScreen extends StatelessWidget {
                 Provider.of<IMDBProvider>(context, listen: false)
                     .toggleSearchType();
               }),
-          PopupMenuButton(
-            icon: Icon(
-              Icons.language,
-              size: 30,
-              color: Colors.white,
-            ),
-            itemBuilder: (_) => ['ar', 'en', 'fr']
-                .map(
-                  (e) => PopupMenuItem(
-                    value: e,
-                    child: Text(e),
-                  ),
-                )
-                .toList(),
-            onSelected: (value) {
-              Provider.of<IMDBProvider>(context, listen: false)
-                  .selectLanguage(value);
-            },
+          
+              
+              PopupMenuButton(
+                icon:Text(Provider.of<IMDBProvider>(context).language),
+                //  Icon(
+                //   Icons.language,
+                //   size: 30,
+                //   color: Colors.white,
+                // ),
+                itemBuilder: (_) => ['ar', 'en', 'fra']
+                    .map(
+                      (e) => PopupMenuItem(
+                        value: e,
+                        child: Text(e),
+                      ),
+                    )
+                    .toList(),
+                onSelected: (value) {
+                  Provider.of<IMDBProvider>(context, listen: false)
+                      .selectLanguage(value);
+                },
+            
           ),
         ],
       ),
@@ -56,17 +60,23 @@ class HomeScreen extends StatelessWidget {
           SizedBox(
             height: 40,
           ),
+          Provider.of<IMDBProvider>(context).hasSub?
           Expanded(
             child: Container(
               width: double.infinity,
               child: ListView.builder(
                 itemCount: 1,
                 itemBuilder: (context, index) {
-                  return SubtitleView('Helllo');
+                  return Column(
+                    children: [
+                      SubtitleView(),
+                      ZipSubtitleView(),
+                    ],
+                  );
                 },
               ),
             ),
-          ),
+          ):SizedBox(),
         ],
       ),
     );

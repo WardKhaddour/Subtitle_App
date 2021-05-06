@@ -8,7 +8,9 @@ class ErrorMessage extends StatelessWidget {
     return AlertDialog(
       title: Text(
         'An error occured.Please Try again.',
-        style: TextStyle(color: Colors.red),
+        style: TextStyle(
+          color: Colors.red,
+        ),
       ),
       content: Text(
         Provider.of<IMDBProvider>(context).error,

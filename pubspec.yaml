@@ -15,6 +15,7 @@ dependencies:
   permission_handler: ^7.1.0
   dio: ^4.0.0
   flutter_downloader: ^1.6.0
+  ext_storage: ^1.0.3
 
 dev_dependencies:
   flutter_test:
