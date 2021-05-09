@@ -16,6 +16,7 @@ dependencies:
   dio: ^4.0.0
   flutter_downloader: ^1.6.0
   ext_storage: ^1.0.3
+  downloads_path_provider: ^0.1.0
 
 dev_dependencies:
   flutter_test:

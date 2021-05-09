@@ -44,18 +44,22 @@ class SearchType extends StatelessWidget {
                   child: TextButton(
                     onPressed: () async {
                       print('searching');
-
+                      Provider.of<IMDBProvider>(context, listen: false)
+                          .toggleLoading();
                       await Provider.of<IMDBProvider>(context, listen: false)
                           .getData(name, season, episode);
+
                       if (Provider.of<IMDBProvider>(context, listen: false)
-                              .error ==
+                              .error !=
                           null) {
                         showDialog(
                           context: context,
                           builder: (context) => ErrorMessage(
-                            error: 'Provider.of<IMDBProvider>(context).error',
+                            error: Provider.of<IMDBProvider>(context).error,
                           ),
                         );
+                        Provider.of<IMDBProvider>(context, listen: false)
+                            .toggleLoading();
                         print('finish search');
                       }
                     },
@@ -123,22 +127,23 @@ class SearchType extends StatelessWidget {
                       child: TextButton(
                         onPressed: () async {
                           print('searching');
-
+                          Provider.of<IMDBProvider>(context).toggleLoading();
                           await Provider.of<IMDBProvider>(context,
                                   listen: false)
                               .getData(name, season, episode);
+
                           if (Provider.of<IMDBProvider>(context, listen: false)
-                                  .error ==
+                                  .error !=
                               null) {
                             print('errorrrrr');
                             showDialog(
                               context: context,
                               builder: (_) => ErrorMessage(
-                                error:
-                                    'Provider.of<IMDBProvider>(context).error',
+                                error: Provider.of<IMDBProvider>(context).error,
                               ),
                             );
                           }
+                          Provider.of<IMDBProvider>(context).toggleLoading();
                           print('finish search');
                         },
                         child: Text(
