@@ -4,12 +4,17 @@ import '../providers/imdb_provider.dart';
 import './my_container.dart';
 import './error_message.dart';
 
-class SearchType extends StatelessWidget {
+class SearchType extends StatefulWidget {
+  @override
+  _SearchTypeState createState() => _SearchTypeState();
+}
+
+class _SearchTypeState extends State<SearchType> {
+  String name;
+  String episode;
+  String season;
   @override
   Widget build(BuildContext context) {
-    String name;
-    String episode;
-    String season;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -44,8 +49,8 @@ class SearchType extends StatelessWidget {
                   child: TextButton(
                     onPressed: () async {
                       print('searching');
-                      Provider.of<IMDBProvider>(context, listen: false)
-                          .toggleLoading();
+                      // Provider.of<IMDBProvider>(context, listen: false)
+                      //     .toggleLoading();
                       await Provider.of<IMDBProvider>(context, listen: false)
                           .getData(name, season, episode);
 
@@ -58,8 +63,8 @@ class SearchType extends StatelessWidget {
                             error: Provider.of<IMDBProvider>(context).error,
                           ),
                         );
-                        Provider.of<IMDBProvider>(context, listen: false)
-                            .toggleLoading();
+                        // Provider.of<IMDBProvider>(context, listen: false)
+                        //     .toggleLoading();
                         print('finish search');
                       }
                     },
@@ -127,7 +132,7 @@ class SearchType extends StatelessWidget {
                       child: TextButton(
                         onPressed: () async {
                           print('searching');
-                          Provider.of<IMDBProvider>(context).toggleLoading();
+                          // Provider.of<IMDBProvider>(context).toggleLoading();
                           await Provider.of<IMDBProvider>(context,
                                   listen: false)
                               .getData(name, season, episode);
@@ -143,7 +148,7 @@ class SearchType extends StatelessWidget {
                               ),
                             );
                           }
-                          Provider.of<IMDBProvider>(context).toggleLoading();
+                          // Provider.of<IMDBProvider>(context).toggleLoading();
                           print('finish search');
                         },
                         child: Text(

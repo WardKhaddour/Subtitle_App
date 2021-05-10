@@ -7,8 +7,11 @@ import '../widgets/search_type.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = '/';
+
   @override
   Widget build(BuildContext context) {
+    List<String> names = Provider.of<IMDBProvider>(context).subFilesNames;
+    List<String> urls = Provider.of<IMDBProvider>(context).subFilesLinks;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black26,
@@ -28,6 +31,7 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   Provider.of<IMDBProvider>(context, listen: false)
                       .toggleSearchType();
+                  Provider.of<IMDBProvider>(context, listen: false).clear();
                 }),
             PopupMenuButton(
               icon: Text(Provider.of<IMDBProvider>(context).language),
@@ -36,7 +40,7 @@ class HomeScreen extends StatelessWidget {
               //   size: 30,
               //   color: Colors.white,
               // ),
-              itemBuilder: (_) => ['ar', 'en', 'fra']
+              itemBuilder: (_) => ['ar', 'en', 'fr']
                   .map(
                     (e) => PopupMenuItem(
                       value: e,
@@ -57,29 +61,29 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               height: 40,
             ),
-            Provider.of<IMDBProvider>(context).hasSub
-                ? Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      child: Provider.of<IMDBProvider>(context).isLoading
-                          ? CircularProgressIndicator(
-                              backgroundColor: Colors.white,
-                              strokeWidth: 7,
-                            )
-                          : ListView.builder(
-                              itemCount: 1,
-                              itemBuilder: (context, index) {
-                                return Column(
-                                  children: [
-                                    SubtitleView(),
-                                    // ZipSubtitleView(),
-                                  ],
-                                );
-                              },
-                            ),
-                    ),
-                  )
-                : SizedBox(),
+            Provider.of<IMDBProvider>(context).isLoading == false
+                ? Provider.of<IMDBProvider>(context).hasSub
+                    ? Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          child: ListView.builder(
+                            itemCount: names.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  for (int i = 0; i < names.length; ++i)
+                                    SubtitleView(
+                                      names[i],
+                                      urls[i],
+                                    )
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : SizedBox()
+                : CircularProgressIndicator(),
           ],
         ));
   }
