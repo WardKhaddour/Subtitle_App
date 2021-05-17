@@ -1,17 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './settings_screen.dart';
 import '../providers/imdb_provider.dart';
 import '../widgets/subtitle_view.dart';
 import '../widgets/search_type.dart';
 
 class HomeScreen extends StatelessWidget {
-  static const routeName = 'home';
+  static const routeName = '/home';
 
   @override
   Widget build(BuildContext context) {
     List<String> names = Provider.of<IMDBProvider>(context).subFilesNames;
     List<String> urls = Provider.of<IMDBProvider>(context).subFilesLinks;
+    // SearchType searchType = SearchType();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black26,
@@ -24,6 +26,18 @@ class HomeScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              Provider.of<IMDBProvider>(context, listen: false).clear();
+              // searchType.clear();
+            },
+          ),
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.of(context).pushNamed(SettingsScreen.routeName);
+              }),
+          IconButton(
               icon: Icon(
                 Icons.swap_horiz,
                 size: 30,
@@ -32,6 +46,7 @@ class HomeScreen extends StatelessWidget {
                 Provider.of<IMDBProvider>(context, listen: false)
                     .toggleSearchType();
                 Provider.of<IMDBProvider>(context, listen: false).clear();
+                // searchType.clear();
               }),
           PopupMenuButton(
             icon: Text(Provider.of<IMDBProvider>(context).language),

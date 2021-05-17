@@ -80,7 +80,7 @@ class _SubtitleViewState extends State<SubtitleView> {
                   widget.name,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 10,
+                    fontSize: 15,
                   ),
                 ),
               )

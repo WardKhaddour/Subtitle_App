@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './screens/settings_screen.dart';
 import './screens/welcome_screen.dart';
 import './providers/imdb_provider.dart';
 import './screens/home_screen.dart';
@@ -14,16 +15,18 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => IMDBProvider(),
       child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData.dark(),
-          home: Scaffold(
-            body: HomeScreen(),
-          ),
-          initialRoute: WelcomeScreen.routeName,
-          routes: {
-            WelcomeScreen.routeName: (context) => WelcomeScreen(),
-            HomeScreen.routeName: (context) => HomeScreen(),
-          }),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark(),
+        // home: Scaffold(
+        //   body: WelcomeScreen(),
+        // ),
+        initialRoute: WelcomeScreen.routeName,
+        routes: {
+          WelcomeScreen.routeName: (context) => WelcomeScreen(),
+          HomeScreen.routeName: (context) => HomeScreen(),
+          SettingsScreen.routeName: (context) => SettingsScreen(),
+        },
+      ),
     );
   }
 }

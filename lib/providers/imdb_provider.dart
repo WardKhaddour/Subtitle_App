@@ -26,12 +26,29 @@ class IMDBProvider with ChangeNotifier {
   List<dynamic> responseBody;
   List<String> subFilesLinks = [];
   List<String> subFilesNames = [];
+  String normalPath;
+  String userPath;
+
   void clear() {
     subFilesNames = [];
     subFilesLinks = [];
     id = null;
     error = null;
     responseBody = null;
+    notifyListeners();
+  }
+
+  Future<void> setNormalPath() async {
+    Directory dir = await DownloadsPathProvider.downloadsDirectory;
+    // Directory finaldir = Directory('${dir.path}/' 'subs/');
+    // if (await finaldir.exists() == false) {
+    //   finaldir.create();
+    // }
+    normalPath = dir.path;
+  }
+
+  Future<void> setUserPath(String path) async {
+    userPath = path;
   }
 
   void toggleLoading() {
@@ -157,12 +174,10 @@ class IMDBProvider with ChangeNotifier {
       if (per.isDenied) {
         throw 'We need Storage Permission';
       }
-      Directory dir = await DownloadsPathProvider.downloadsDirectory;
-      // Directory finaldir = Directory('${dir.path}/' 'subs/');
-      // if (await finaldir.exists() == false) {
-      //   finaldir.create();
-      // }
-      String finalPath = dir.path;
+      await setNormalPath();
+      print("normalPath $normalPath");
+      String finalPath = userPath == null ? normalPath : userPath;
+      print('final path $finalPath');
       print(1);
       Dio dio = Dio();
       print(2);

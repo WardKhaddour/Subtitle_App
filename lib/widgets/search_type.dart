@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/imdb_provider.dart';
+import 'package:task_3_subtitle_app/dummy_data.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import './my_container.dart';
 import './error_message.dart';
+import '../providers/imdb_provider.dart';
 
 class SearchType extends StatefulWidget {
   @override
@@ -13,27 +15,40 @@ class _SearchTypeState extends State<SearchType> {
   String name;
   String episode;
   String season;
+  void clear() {
+    name = null;
+    season = null;
+    episode = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
           MyContainer(
-            child: TextField(
-              style: TextStyle(color: Colors.black),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: Provider.of<IMDBProvider>(context).isMovie
-                    ? 'Enter Movie Name'
-                    : 'Enter Tv Show Name',
-                hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20,
+            child: TypeAheadField(
+              textFieldConfiguration: TextFieldConfiguration(
+                autofocus: true,
+                style: TextStyle(color: Colors.black),
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: Provider.of<IMDBProvider>(context).isMovie
+                      ? 'Enter Movie Name'
+                      : 'Enter Tv Show Name',
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 20,
+                  ),
                 ),
               ),
-              onChanged: (value) {
-                name = value;
+              onSuggestionSelected: (_) {},
+              itemBuilder: (context, suggestion) {
+                return Text(suggestion);
+              },
+              suggestionsCallback: (pattern) {
+                return Data.getSuggestions(pattern);
               },
             ),
           ),

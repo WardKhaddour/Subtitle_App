@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'home_screen.dart';
+import '../widgets/no_intenet.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  static const routeName = 'welcome';
+  static const routeName = '/';
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  String _message;
-
+  // String _message;
+  bool _isConnected;
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
@@ -20,38 +20,27 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         setState(() {
-          _message = 'connected';
+          _isConnected = true;
+          // _message = 'connected';
         });
       }
     } on SocketException catch (_) {
       setState(() {
-        _message = 'not connected';
+        _isConnected = false;
+        // _message = 'not connected';
       });
     }
-    if (_message == 'connected') {
+    if (_isConnected) {
+      print('connect');
       Timer(Duration(seconds: 5), () {
-        Navigator.of(context).pushReplacementNamed('home');
+        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
       });
     } else {
+      print('not connect');
+
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Check your internet connection'),
-          content: Image.asset('assets/images/no-conection.png'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('welcome');
-              },
-              child: Text('Retry'),
-            ),
-            TextButton(
-                child: Text('Close'),
-                onPressed: () {
-                  SystemNavigator.pop();
-                })
-          ],
-        ),
+        builder: (_) => NoInternet(context, WelcomeScreen.routeName),
       );
     }
   }
