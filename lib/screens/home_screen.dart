@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
             //   size: 30,
             //   color: Colors.white,
             // ),
-            itemBuilder: (_) => ['ara', 'eng', 'fre']
+            itemBuilder: (_) => ['ar', 'en', 'fr']
                 .map(
                   (e) => PopupMenuItem(
                     value: e,

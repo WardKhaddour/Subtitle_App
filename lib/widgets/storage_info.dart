@@ -7,7 +7,7 @@ import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:task_3_subtitle_app/providers/imdb_provider.dart';
+import '../providers/imdb_provider.dart';
 
 class StorageInformation extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class StorageInformation extends StatefulWidget {
 
 class _StorageInformationState extends State<StorageInformation> {
   Directory externalDirectory;
-  Directory pickedDirectory = Directory('/storage/emulated/0/Downloads');
+  Directory pickedDirectory;
   List<StorageInfo> storageInfo = [];
 
   Future<void> getPermissions() async {
@@ -63,6 +63,9 @@ class _StorageInformationState extends State<StorageInformation> {
 
   @override
   Widget build(BuildContext context) {
+    pickedDirectory = Provider.of<IMDBProvider>(context).userPath != null
+        ? Directory(Provider.of<IMDBProvider>(context).userPath)
+        : Directory(Provider.of<IMDBProvider>(context).normalPath);
     return Center(
       child: (storageInfo.length > 0)
           ? ListTile(

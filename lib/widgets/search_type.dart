@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_3_subtitle_app/dummy_data.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import './my_container.dart';
 import './error_message.dart';
 import '../providers/imdb_provider.dart';
+import '../dummy_data.dart';
 
 class SearchType extends StatefulWidget {
   @override
@@ -15,6 +15,32 @@ class _SearchTypeState extends State<SearchType> {
   String name;
   String episode;
   String season;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<IMDBProvider>(context, listen: false).setNormalPath();
+  }
+
+  Future<void> search() async {
+    print('searching');
+    // Provider.of<IMDBProvider>(context, listen: false)
+    //     .toggleLoading();
+    await Provider.of<IMDBProvider>(context, listen: false)
+        .getData(name, season, episode);
+
+    if (Provider.of<IMDBProvider>(context, listen: false).error != null) {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorMessage(
+          error: Provider.of<IMDBProvider>(context).error,
+        ),
+      );
+      // Provider.of<IMDBProvider>(context, listen: false)
+      //     .toggleLoading();
+      print('finish search');
+    }
+  }
+
   void clear() {
     name = null;
     season = null;
@@ -29,8 +55,12 @@ class _SearchTypeState extends State<SearchType> {
           MyContainer(
             child: TypeAheadField(
               textFieldConfiguration: TextFieldConfiguration(
-                autofocus: true,
-                style: TextStyle(color: Colors.black),
+                onChanged: (value) {
+                  name = value;
+                },
+                controller: TextEditingController(text: name),
+                // autofocus: true,
+                style: TextStyle(color: Colors.black, fontSize: 20),
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -43,9 +73,37 @@ class _SearchTypeState extends State<SearchType> {
                   ),
                 ),
               ),
-              onSuggestionSelected: (_) {},
+              suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                shadowColor: Colors.grey,
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                ),
+                offsetX: 0.0,
+              ),
+              onSuggestionSelected: (selectedName) {
+                print(selectedName);
+                setState(
+                  () {
+                    name = selectedName;
+                  },
+                );
+                search();
+              },
               itemBuilder: (context, suggestion) {
-                return Text(suggestion);
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        suggestion,
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
+                    Divider(),
+                  ],
+                );
               },
               suggestionsCallback: (pattern) {
                 return Data.getSuggestions(pattern);
@@ -62,27 +120,7 @@ class _SearchTypeState extends State<SearchType> {
                       borderRadius: BorderRadius.circular(30),
                       color: Colors.lightBlueAccent),
                   child: TextButton(
-                    onPressed: () async {
-                      print('searching');
-                      // Provider.of<IMDBProvider>(context, listen: false)
-                      //     .toggleLoading();
-                      await Provider.of<IMDBProvider>(context, listen: false)
-                          .getData(name, season, episode);
-
-                      if (Provider.of<IMDBProvider>(context, listen: false)
-                              .error !=
-                          null) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ErrorMessage(
-                            error: Provider.of<IMDBProvider>(context).error,
-                          ),
-                        );
-                        // Provider.of<IMDBProvider>(context, listen: false)
-                        //     .toggleLoading();
-                        print('finish search');
-                      }
-                    },
+                    onPressed: search,
                     child: Text(
                       'Search',
                       style: TextStyle(
@@ -145,27 +183,7 @@ class _SearchTypeState extends State<SearchType> {
                         color: Colors.lightBlueAccent,
                       ),
                       child: TextButton(
-                        onPressed: () async {
-                          print('searching');
-                          // Provider.of<IMDBProvider>(context).toggleLoading();
-                          await Provider.of<IMDBProvider>(context,
-                                  listen: false)
-                              .getData(name, season, episode);
-
-                          if (Provider.of<IMDBProvider>(context, listen: false)
-                                  .error !=
-                              null) {
-                            print('errorrrrr');
-                            showDialog(
-                              context: context,
-                              builder: (_) => ErrorMessage(
-                                error: Provider.of<IMDBProvider>(context).error,
-                              ),
-                            );
-                          }
-                          // Provider.of<IMDBProvider>(context).toggleLoading();
-                          print('finish search');
-                        },
+                        onPressed: search,
                         child: Text(
                           'Search',
                           style: TextStyle(

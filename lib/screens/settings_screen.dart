@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/storage_info.dart';
+import '../widgets/storage_info.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const routeName = '/settings';

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum SubTypes {
   Movie,
@@ -22,13 +23,15 @@ class IMDBProvider with ChangeNotifier {
   bool hasSub = false;
   bool isMovie = true;
   bool isLoading = false;
+  bool hasPath = false;
   SubTypes searchType = SubTypes.Movie;
   List<dynamic> responseBody;
   List<String> subFilesLinks = [];
   List<String> subFilesNames = [];
   String normalPath;
   String userPath;
-
+  bool connectedToInternet = true;
+  void checkConnection() {}
   void clear() {
     subFilesNames = [];
     subFilesLinks = [];
@@ -49,6 +52,19 @@ class IMDBProvider with ChangeNotifier {
 
   Future<void> setUserPath(String path) async {
     userPath = path;
+    final pref = await SharedPreferences.getInstance();
+    pref.setString('settings', userPath);
+  }
+
+  Future<void> tryGetiingPath() async {
+    final pref = await SharedPreferences.getInstance();
+
+    if (pref.containsKey('settings')) {
+      hasPath = true;
+      userPath = pref.getString('settings');
+    } else {
+      hasPath = false;
+    }
   }
 
   void toggleLoading() {
@@ -174,7 +190,11 @@ class IMDBProvider with ChangeNotifier {
       if (per.isDenied) {
         throw 'We need Storage Permission';
       }
-      await setNormalPath();
+      await tryGetiingPath();
+
+      if (!hasPath) {
+        await setNormalPath();
+      }
       print("normalPath $normalPath");
       String finalPath = userPath == null ? normalPath : userPath;
       print('final path $finalPath');

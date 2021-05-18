@@ -8,6 +8,8 @@ class InputProvider with ChangeNotifier {
   String get episode => _episode;
   String get season => _season;
   void setName(String n) => _name = n;
+  void setSeason(String s) => _season = s;
+  void setEpisode(String e) => _episode = e;
   void clear() {
     _name = null;
     _season = null;

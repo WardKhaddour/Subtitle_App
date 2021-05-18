@@ -1961,19 +1961,24 @@ class Data {
   static List<String> get names {
     final temp = _movies['movies'] as List;
     final _names = temp.map((e) => e['title'].toString()).toList();
-    print(_names);
+    // print(_names);
     return _names;
   }
 
   static List<String> getSuggestions(String name) {
     final temp = <String>[];
+    print(name);
+    if (name.isEmpty) {
+      return [];
+    }
     names.forEach(
       (element) {
-        if (element.contains(name)) {
+        if (element.toLowerCase().contains(name.toLowerCase())) {
           temp.add(element);
         }
       },
     );
+    print(temp);
     return temp;
   }
 }
