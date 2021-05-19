@@ -16,10 +16,10 @@ enum SubTypes {
 class IMDBProvider with ChangeNotifier {
   String id;
   String error;
-  String zipDownloadLink;
+  String subDownloadLink;
   String subtitlesLink;
   String subFileName;
-  String language = 'en';
+  String language = 'ara';
   bool hasSub = false;
   bool isMovie = true;
   bool isLoading = false;
@@ -134,12 +134,12 @@ class IMDBProvider with ChangeNotifier {
       responseBody = json.decode(result.toString());
       for (var obj in responseBody) {
         subFilesNames.add(obj['SubFileName']);
-        subFilesLinks.add(obj['ZipDownloadLink']);
+        subFilesLinks.add(obj['SubDownloadLink']);
       }
       print('get movie sub $responseBody');
-      print('zip ${responseBody[0]['ZipDownloadLink']}');
+      print('zip ${responseBody[0]['SubDownloadLink']}');
       print('str ${responseBody[0]['SubtitlesLink']}');
-      zipDownloadLink = responseBody[0]['ZipDownloadLink'];
+      subDownloadLink = responseBody[0]['SubDownloadLink'];
       subtitlesLink = responseBody[0]['SubtitlesLink'];
       subFileName = responseBody[0]['SubFileName'];
       hasSub = true;
@@ -167,13 +167,13 @@ class IMDBProvider with ChangeNotifier {
       responseBody = jsonDecode(result.toString());
       for (var obj in responseBody) {
         subFilesNames.add(obj['SubFileName']);
-        subFilesLinks.add(obj['ZipDownloadLink']);
+        subFilesLinks.add(obj['SubDownloadLink']);
       }
       print(responseBody);
       print('get movie sub $responseBody');
-      print('zip ${responseBody[0]['ZipDownloadLink']}');
+      print('zip ${responseBody[0]['SubDownloadLink']}');
       print('str ${responseBody[0]['SubtitlesLink']}');
-      zipDownloadLink = responseBody[0]['ZipDownloadLink'];
+      subDownloadLink = responseBody[0]['SubDownloadLink'];
       subtitlesLink = responseBody[0]['SubtitlesLink'];
       subFileName = responseBody[0]['SubFileName'];
       hasSub = true;
@@ -191,7 +191,6 @@ class IMDBProvider with ChangeNotifier {
         throw 'We need Storage Permission';
       }
       await tryGetiingPath();
-
       if (!hasPath) {
         await setNormalPath();
       }

@@ -4,6 +4,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import './my_container.dart';
 import './error_message.dart';
 import '../providers/imdb_provider.dart';
+import '../providers/input_provider.dart';
 import '../dummy_data.dart';
 
 class SearchType extends StatefulWidget {
@@ -15,10 +16,12 @@ class _SearchTypeState extends State<SearchType> {
   String name;
   String episode;
   String season;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     Provider.of<IMDBProvider>(context, listen: false).setNormalPath();
+    Provider.of<IMDBProvider>(context, listen: false).tryGetiingPath();
   }
 
   Future<void> search() async {
@@ -49,17 +52,20 @@ class _SearchTypeState extends State<SearchType> {
 
   @override
   Widget build(BuildContext context) {
+    final prov = Provider.of<InputProvider>(context, listen: true);
+    prov.setController(name);
+    final controller = prov.controller;
+    name = prov.name;
+    season = prov.season;
+    episode = prov.episode;
     return SingleChildScrollView(
       child: Column(
         children: [
           MyContainer(
             child: TypeAheadField(
               textFieldConfiguration: TextFieldConfiguration(
-                onChanged: (value) {
-                  name = value;
-                },
-                controller: TextEditingController(text: name),
-                // autofocus: true,
+                controller: controller,
+                autofocus: true,
                 style: TextStyle(color: Colors.black, fontSize: 20),
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
@@ -72,6 +78,14 @@ class _SearchTypeState extends State<SearchType> {
                     fontSize: 20,
                   ),
                 ),
+                onChanged: (value) {
+                  // name = value;
+
+                  controller.text = value;
+                  controller.selection = TextSelection.fromPosition(
+                      TextPosition(offset: controller.text.length));
+                  prov.setName(value);
+                },
               ),
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 shadowColor: Colors.grey,
@@ -85,7 +99,9 @@ class _SearchTypeState extends State<SearchType> {
                 print(selectedName);
                 setState(
                   () {
-                    name = selectedName;
+                    controller.text = selectedName;
+                    prov.setName(selectedName);
+                    // name = selectedName;
                   },
                 );
                 search();
@@ -136,6 +152,7 @@ class _SearchTypeState extends State<SearchType> {
                         Expanded(
                           child: MyContainer(
                             child: TextField(
+                              keyboardType: TextInputType.number,
                               style: TextStyle(color: Colors.black),
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
@@ -147,7 +164,8 @@ class _SearchTypeState extends State<SearchType> {
                                 ),
                               ),
                               onChanged: (value) {
-                                season = value;
+                                // season = value;
+                                prov.setSeason(value);
                               },
                             ),
                           ),
@@ -155,6 +173,7 @@ class _SearchTypeState extends State<SearchType> {
                         Expanded(
                           child: MyContainer(
                             child: TextField(
+                              keyboardType: TextInputType.number,
                               style: TextStyle(color: Colors.black),
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
@@ -166,7 +185,8 @@ class _SearchTypeState extends State<SearchType> {
                                 ),
                               ),
                               onChanged: (value) {
-                                episode = value;
+                                // episode = value;
+                                prov.setEpisode(value);
                               },
                             ),
                           ),

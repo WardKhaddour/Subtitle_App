@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './providers/input_provider.dart';
+import './providers/imdb_provider.dart';
 import './screens/settings_screen.dart';
 import './screens/welcome_screen.dart';
-import './providers/imdb_provider.dart';
 import './screens/home_screen.dart';
 
 void main() {
@@ -12,8 +13,15 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => IMDBProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => IMDBProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => InputProvider(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(),

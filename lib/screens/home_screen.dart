@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:task_3_subtitle_app/providers/input_provider.dart';
 import './settings_screen.dart';
 import '../providers/imdb_provider.dart';
 import '../widgets/subtitle_view.dart';
@@ -13,7 +14,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> names = Provider.of<IMDBProvider>(context).subFilesNames;
     List<String> urls = Provider.of<IMDBProvider>(context).subFilesLinks;
-    // SearchType searchType = SearchType();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black26,
@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.refresh),
             onPressed: () {
               Provider.of<IMDBProvider>(context, listen: false).clear();
-              // searchType.clear();
+              Provider.of<InputProvider>(context, listen: false).clear();
             },
           ),
           IconButton(
@@ -46,7 +46,7 @@ class HomeScreen extends StatelessWidget {
                 Provider.of<IMDBProvider>(context, listen: false)
                     .toggleSearchType();
                 Provider.of<IMDBProvider>(context, listen: false).clear();
-                // searchType.clear();
+                Provider.of<InputProvider>(context, listen: false).clear();
               }),
           PopupMenuButton(
             icon: Text(Provider.of<IMDBProvider>(context).language),
@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
             //   size: 30,
             //   color: Colors.white,
             // ),
-            itemBuilder: (_) => ['ar', 'en', 'fr']
+            itemBuilder: (_) => ['ara', 'eng', 'fre', 'ger', 'ita', 'spa']
                 .map(
                   (e) => PopupMenuItem(
                     value: e,

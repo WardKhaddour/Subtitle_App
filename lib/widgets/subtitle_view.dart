@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../providers/imdb_provider.dart';
 
 class SubtitleView extends StatefulWidget {
@@ -50,7 +49,7 @@ class _SubtitleViewState extends State<SubtitleView> {
                                     .error ==
                                 null) {
                               setState(() {
-                                _snackBarMessage = 'File Saved in Downloads';
+                                _snackBarMessage = 'File Saved';
                                 _downloaded = true;
                               });
                             } else {
@@ -60,6 +59,7 @@ class _SubtitleViewState extends State<SubtitleView> {
                                 _downloaded = false;
                               });
                             }
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

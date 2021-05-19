@@ -21,7 +21,7 @@
 //       print('path = $path');
 //       print('path = $subtitlesLink');
 //       final taskId = await FlutterDownloader.enqueue(
-//         url: zipDownloadLink,
+//         url: SubDownloadLink,
 //         savedDir: path,
 //         showNotification: true,
 //         fileName: subFileName,
@@ -89,7 +89,7 @@
 //     var path = await DownloadsPathProvider.downloadsDirectory;
 //     print('path = ${path.toString()}');
 //     print(1);
-//     myUrl = zipDownloadLink;
+//     myUrl = SubDownloadLink;
 //     var request = await httpClient.getUrl(Uri.parse(myUrl));
 //     print(2);
 
@@ -130,7 +130,7 @@
 //   if (per.isGranted) {
 //     try {
 //       Response response = await Dio().get(
-//         zipDownloadLink,
+//         SubDownloadLink,
 //         onReceiveProgress: (received, total) {},
 //         //Received data with List<int>
 //         options: Options(

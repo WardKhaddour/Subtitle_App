@@ -17,6 +17,7 @@ class StorageInformation extends StatefulWidget {
 class _StorageInformationState extends State<StorageInformation> {
   Directory externalDirectory;
   Directory pickedDirectory;
+  String createdFolder;
   List<StorageInfo> storageInfo = [];
 
   Future<void> getPermissions() async {
@@ -79,16 +80,102 @@ class _StorageInformationState extends State<StorageInformation> {
                   Navigator.of(context).push<FolderPickerPage>(
                     MaterialPageRoute(
                       builder: (BuildContext context) {
-                        return FolderPickerPage(
-                          rootDirectory: Directory(storageInfo[0].rootDir),
-                          action:
-                              (BuildContext context, Directory folder) async {
-                            print("Picked directory $folder");
-                            setState(() => pickedDirectory = folder);
-                            Provider.of<IMDBProvider>(context, listen: false)
-                                .setUserPath(pickedDirectory.path);
-                            Navigator.of(context).pop();
-                          },
+                        return Scaffold(
+                          floatingActionButton: FloatingActionButton(
+                            child: Icon(
+                              Icons.add,
+                            ),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (ctx) => SingleChildScrollView(
+                                  child: Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          'Add folder',
+                                          style: TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        Container(
+                                          color: Colors.white,
+                                          child: TextField(
+                                            autofocus: true,
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter Folder Name',
+                                            ),
+                                            onChanged: (value) {
+                                              createdFolder = value;
+                                            },
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            Directory cFolder =
+                                                Directory(createdFolder);
+                                            print(1);
+                                            print(storageInfo[0].rootDir);
+                                            Directory dir = Directory(
+                                                '${storageInfo[0].rootDir}/${cFolder.path}');
+                                            print('dir $dir');
+                                            if (await dir.exists()) {
+                                              print('exists');
+                                              Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Folder Exists',
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              print('creating');
+                                              await dir.create();
+                                              final storageInformation =
+                                                  await PathProviderEx
+                                                      .getStorageInfo();
+                                              setState(() {
+                                                storageInfo =
+                                                    storageInformation;
+                                              });
+                                              print('created');
+                                              Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content:
+                                                      Text('Folder Created'),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Text('Create'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          body: FolderPickerPage(
+                            rootDirectory: Directory(storageInfo[0].rootDir),
+                            action:
+                                (BuildContext context, Directory folder) async {
+                              print("Picked directory $folder");
+                              setState(() => pickedDirectory = folder);
+                              Provider.of<IMDBProvider>(context, listen: false)
+                                  .setUserPath(pickedDirectory.path);
+                              Navigator.of(context).pop();
+                            },
+                          ),
                         );
                       },
                     ),
