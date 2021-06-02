@@ -1,36 +1,40 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class InputProvider with ChangeNotifier {
-  String name;
-  String episode;
-  String season;
-  TextEditingController controller;
-  // String get name => _name;
-  // String get episode => _episode;
-  // String get season => _season;
-  TextEditingController setController(String controllerText) =>
-      TextEditingController(text: controllerText);
+  String _name;
+  String _episode;
+  String _season;
+
+  String get name => _name;
+  String get episode => _episode;
+  String get season => _season;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController seasonController = TextEditingController();
+  TextEditingController episodeController = TextEditingController();
 
   void setName(String n) {
-    name = n;
-    print('name $name');
+    _name = n;
+    print('name $_name');
     notifyListeners();
   }
 
   void setSeason(String s) {
-    season = s;
+    _season = s;
     notifyListeners();
   }
 
   void setEpisode(String e) {
-    episode = e;
+    _episode = e;
     notifyListeners();
   }
 
   void clear() {
-    name = null;
-    season = null;
-    episode = null;
+    _name = null;
+    _season = null;
+    _episode = null;
+    nameController.clear();
+    seasonController.clear();
+    episodeController.clear();
     notifyListeners();
   }
 }

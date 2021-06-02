@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './helpers/custom_route.dart';
 import './providers/input_provider.dart';
 import './providers/imdb_provider.dart';
 import './screens/settings_screen.dart';
@@ -24,10 +25,20 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
-        // home: Scaffold(
-        //   body: WelcomeScreen(),
-        // ),
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(color: Colors.green),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              primary: Colors.green,
+            ),
+          ),
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: CustomPageTransitionsBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionsBuilder(),
+            },
+          ),
+        ),
         initialRoute: WelcomeScreen.routeName,
         routes: {
           WelcomeScreen.routeName: (context) => WelcomeScreen(),

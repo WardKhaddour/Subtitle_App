@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class NoInternet extends StatelessWidget {
-  final String currentPageRouteName;
   final BuildContext context;
-  NoInternet(this.context, this.currentPageRouteName);
+  final Function retry;
+  final Function close;
+  NoInternet(this.context, this.retry, this.close);
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -12,28 +12,29 @@ class NoInternet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Unable to connect !',
+            'Unable to connect!!',
             style: TextStyle(
-              color: Colors.red,
-              fontSize: 26,
+              color: Theme.of(context).errorColor,
+              fontSize: 20,
             ),
           ),
           Text('Check your internet connection'),
         ],
       ),
-      content: Image.asset('assets/images/no-conection.png'),
+      content: Image.asset(
+        'assets/images/no-conection.png',
+        height: 100,
+        width: 100,
+      ),
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pushReplacementNamed(currentPageRouteName);
-          },
           child: Text('Retry'),
+          onPressed: retry,
         ),
         TextButton(
-            child: Text('Close'),
-            onPressed: () {
-              SystemNavigator.pop();
-            })
+          child: Text('Close'),
+          onPressed: close,
+        ),
       ],
     );
   }

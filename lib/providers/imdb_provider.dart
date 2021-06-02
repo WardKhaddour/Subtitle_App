@@ -16,25 +16,37 @@ enum SubTypes {
 class IMDBProvider with ChangeNotifier {
   String id;
   String error;
-  String subDownloadLink;
-  String subtitlesLink;
-  String subFileName;
+  // String subDownloadLink;
+  // String subtitlesLink;
+  // String subFileName;
   String language = 'ara';
   bool hasSub = false;
-  bool isMovie = true;
+  bool isMovie;
   bool isLoading = false;
   bool hasPath = false;
   SubTypes searchType = SubTypes.Movie;
   List<dynamic> responseBody;
-  List<String> subFilesLinks = [];
-  List<String> subFilesNames = [];
+  List<String> subFilesLinks;
+  List<String> subFilesNames;
+  List<String> subFilesSizes;
   String normalPath;
   String userPath;
-  bool connectedToInternet = true;
-  void checkConnection() {}
+  void setToMovie() {
+    isMovie = true;
+    searchType = SubTypes.Movie;
+    notifyListeners();
+  }
+
+  void setToTvShow() {
+    isMovie = false;
+    searchType = SubTypes.TvShow;
+    notifyListeners();
+  }
+
   void clear() {
     subFilesNames = [];
     subFilesLinks = [];
+    subFilesSizes = [];
     id = null;
     error = null;
     responseBody = null;
@@ -95,7 +107,7 @@ class IMDBProvider with ChangeNotifier {
       print('id=${id.toString()}');
     } catch (e) {
       print('error $e');
-      error = e.toString();
+      error = 'Be ensure of movie name';
     }
   }
 
@@ -103,6 +115,7 @@ class IMDBProvider with ChangeNotifier {
     try {
       if (!isMovie && (episode == null || season == null) || name == null) {
         print('error if statement');
+        error = 'Invalid Input';
         return;
       }
       print('isLoading');
@@ -115,7 +128,7 @@ class IMDBProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('error getting data!');
-      error = e.toString();
+      error = 'Network Error';
     }
   }
 
@@ -131,20 +144,24 @@ class IMDBProvider with ChangeNotifier {
       await for (var contents in response.transform(Utf8Decoder())) {
         result.write(contents);
       }
+      subFilesLinks = [];
+      subFilesNames = [];
+      subFilesSizes = [];
       responseBody = json.decode(result.toString());
       for (var obj in responseBody) {
         subFilesNames.add(obj['SubFileName']);
         subFilesLinks.add(obj['SubDownloadLink']);
+        subFilesSizes.add(obj['SubSize']);
       }
       print('get movie sub $responseBody');
       print('zip ${responseBody[0]['SubDownloadLink']}');
       print('str ${responseBody[0]['SubtitlesLink']}');
-      subDownloadLink = responseBody[0]['SubDownloadLink'];
-      subtitlesLink = responseBody[0]['SubtitlesLink'];
-      subFileName = responseBody[0]['SubFileName'];
+      // subDownloadLink = responseBody[0]['SubDownloadLink'];
+      // subtitlesLink = responseBody[0]['SubtitlesLink'];
+      // subFileName = responseBody[0]['SubFileName'];
       hasSub = true;
     } catch (e) {
-      error = e.toString();
+      error = 'Network Error';
       print('get movie sub $error');
     }
   }
@@ -153,7 +170,7 @@ class IMDBProvider with ChangeNotifier {
       String showName, String season, String episode) async {
     print("getTvSub");
     try {
-      HttpClient client = new HttpClient();
+      HttpClient client = HttpClient();
       client.userAgent = 'obadasub';
 
       HttpClientRequest request = await client.getUrl(Uri.parse(
@@ -164,22 +181,25 @@ class IMDBProvider with ChangeNotifier {
       await for (var contents in response.transform(Utf8Decoder())) {
         result.write(contents);
       }
+      subFilesLinks = [];
+      subFilesNames = [];
+      subFilesSizes = [];
       responseBody = jsonDecode(result.toString());
       for (var obj in responseBody) {
         subFilesNames.add(obj['SubFileName']);
         subFilesLinks.add(obj['SubDownloadLink']);
       }
       print(responseBody);
-      print('get movie sub $responseBody');
-      print('zip ${responseBody[0]['SubDownloadLink']}');
-      print('str ${responseBody[0]['SubtitlesLink']}');
-      subDownloadLink = responseBody[0]['SubDownloadLink'];
-      subtitlesLink = responseBody[0]['SubtitlesLink'];
-      subFileName = responseBody[0]['SubFileName'];
+      // print('get movie sub $responseBody');
+      // print('zip ${responseBody[0]['SubDownloadLink']}');
+      // print('str ${responseBody[0]['SubtitlesLink']}');
+      // subDownloadLink = responseBody[0]['SubDownloadLink'];
+      // subtitlesLink = responseBody[0]['SubtitlesLink'];
+      // subFileName = responseBody[0]['SubFileName'];
       hasSub = true;
     } catch (e) {
       print(e.toString());
-      error = e.toString();
+      error = 'Network Error';
     }
   }
 
@@ -189,6 +209,7 @@ class IMDBProvider with ChangeNotifier {
       final per = await Permission.storage.request();
       if (per.isDenied) {
         throw 'We need Storage Permission';
+        // await Permission.storage.request();
       }
       await tryGetiingPath();
       if (!hasPath) {
@@ -205,7 +226,7 @@ class IMDBProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('error ${e.toString()}');
-      error = e.toString();
+      error = 'Permission not allowed';
       throw e;
     }
   }

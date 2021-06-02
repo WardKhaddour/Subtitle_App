@@ -1,4 +1,3 @@
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.task_3_subtitle_app">
     <uses-permission android:name="android.permission.INTERNET" />
@@ -9,17 +8,6 @@
         android:usesCleartextTraffic="true"
           android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
-        <provider
-    android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
-    android:authorities="${applicationId}.flutter_downloader.provider"
-    android:exported="false"
-    android:grantUriPermissions="true">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/provider_paths"/>
-</provider>
-
-    
         <activity
         android:showWhenLocked="true"
     android:turnScreenOn="true"

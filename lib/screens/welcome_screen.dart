@@ -1,6 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../helpers/check_internet.dart';
+import '../widgets/tasqment_text.dart';
+import '../widgets/loading_image.dart';
 import 'home_screen.dart';
 import '../widgets/no_intenet.dart';
 
@@ -16,20 +19,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          _isConnected = true;
-          // _message = 'connected';
-        });
-      }
-    } on SocketException catch (_) {
-      setState(() {
-        _isConnected = false;
-        // _message = 'not connected';
-      });
-    }
+    _isConnected = await CheckInternet.checkInternet();
     if (_isConnected) {
       print('connect');
       Timer(Duration(seconds: 5), () {
@@ -40,7 +30,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
       showDialog(
         context: context,
-        builder: (_) => NoInternet(context, WelcomeScreen.routeName),
+        builder: (_) => NoInternet(context, () async {
+          Navigator.of(context).pop();
+          _isConnected = await CheckInternet.checkInternet();
+        }, () {
+          SystemNavigator.pop();
+        }),
       );
     }
   }
@@ -51,20 +46,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/images/subtitle-icon.jpg',
-            color: Colors.white,
+          Container(
+            child: Hero(
+              tag: 'logo',
+              child: LoadingImage(),
+            ),
           ),
           SizedBox(height: 30),
+          TasqmentText(),
+          SizedBox(height: 40),
           Text(
             'Download Any Subtitle You Want!',
             style: TextStyle(fontSize: 20),
-          ),
-          SizedBox(height: 30),
-          Container(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
           ),
         ],
       ),
