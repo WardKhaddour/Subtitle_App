@@ -14,29 +14,30 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  // String _message;
   bool _isConnected;
+  void onNetworkError() {
+    showDialog(
+      context: context,
+      builder: (_) => NoInternet(context, () async {
+        _isConnected = await CheckInternet.checkInternet();
+
+        Navigator.of(context).pop();
+      }, () {
+        SystemNavigator.pop();
+      }),
+    );
+  }
+
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     _isConnected = await CheckInternet.checkInternet();
     if (_isConnected) {
-      print('connect');
       Timer(Duration(seconds: 5), () {
         Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
       });
     } else {
-      print('not connect');
-
-      showDialog(
-        context: context,
-        builder: (_) => NoInternet(context, () async {
-          Navigator.of(context).pop();
-          _isConnected = await CheckInternet.checkInternet();
-        }, () {
-          SystemNavigator.pop();
-        }),
-      );
+      onNetworkError();
     }
   }
 

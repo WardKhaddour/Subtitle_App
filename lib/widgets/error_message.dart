@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import '../providers/imdb_provider.dart';
 
 class ErrorMessage extends StatelessWidget {
   final String error;

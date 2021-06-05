@@ -34,7 +34,7 @@ class _LoadingImageState extends State<LoadingImage>
     return Center(
       child: RotationTransition(
         turns: _animation,
-        child: Image.asset('assets/images/tasqment-logo.jpg'),
+        child: Image.asset('assets/images/tasqment-logo.png'),
       ),
     );
   }

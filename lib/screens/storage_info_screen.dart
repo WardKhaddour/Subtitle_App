@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'dart:async';
-// import 'package:filex/filex.dart';
-
 import 'package:path_provider/path_provider.dart';
 import 'package:folder_picker/folder_picker.dart';
 import 'package:flutter/material.dart';
@@ -83,102 +81,10 @@ class _StorageInformationState extends State<StorageInformation> {
                   Navigator.of(context).push<FolderPickerPage>(
                     MaterialPageRoute(
                       builder: (BuildContext context) {
-                        // return Scaffold(
-                        //   backgroundColor: Colors.green,
-                        //   floatingActionButton: FloatingActionButton(
-                        //     backgroundColor: Colors.green,
-                        //     child: Icon(
-                        //       Icons.add,
-                        //     ),
-                        //     onPressed: () {
-                        //       showModalBottomSheet(
-                        //         context: context,
-                        //         builder: (ctx) => SingleChildScrollView(
-                        //           child: Container(
-                        //             child: Column(
-                        //               children: <Widget>[
-                        //                 Text(
-                        //                   'Add folder',
-                        //                   style: TextStyle(
-                        //                     fontSize: 25,
-                        //                     fontWeight: FontWeight.bold,
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(height: 20),
-                        //                 Container(
-                        //                   color: Colors.white,
-                        //                   child: TextField(
-                        //                     autofocus: true,
-                        //                     decoration: InputDecoration(
-                        //                       hintText: 'Enter Folder Name',
-                        //                     ),
-                        //                     onChanged: (value) {
-                        //                       createdFolder = value;
-                        //                     },
-                        //                     style: TextStyle(
-                        //                       color: Colors.black,
-                        //                     ),
-                        //                   ),
-                        //                 ),
-                        //                 TextButton(
-                        //                   onPressed: () async {
-                        //                     Directory cFolder =
-                        //                         Directory(createdFolder);
-                        //                     print(1);
-                        //                     print(storageInfo[0].rootDir);
-                        //                     Directory dir = Directory(
-                        //                       '${}/${cFolder.path}',
-                        //                     );
-                        //                     print('dir $dir');
-                        //                     if (await dir.exists()) {
-                        //                       print('exists');
-                        //                       Navigator.of(context).pop();
-                        //                       ScaffoldMessenger.of(context)
-                        //                           .showSnackBar(
-                        //                         SnackBar(
-                        //                           content: Text(
-                        //                             'Folder Exists',
-                        //                           ),
-                        //                         ),
-                        //                       );
-                        //                     } else {
-                        //                       print('creating');
-                        //                       await dir.create();
-                        //                       setState(() {
-                        //                         init();
-                        //                         initPlatformState();
-                        //                       });
-
-                        //                       print('created');
-                        //                       Navigator.of(context).pop();
-                        //                       ScaffoldMessenger.of(context)
-                        //                           .showSnackBar(
-                        //                         SnackBar(
-                        //                           content:
-                        //                               Text('Folder Created'),
-                        //                         ),
-                        //                       );
-                        //                     }
-                        //                   },
-                        //                   child: Text('Create'),
-                        //                 ),
-                        //                 SizedBox(height: 40),
-                        //               ],
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       );
-                        //     },
-                        //   ),
-                        // body:
                         return FolderPickerPage(
-                          // controller:
-                          // FilexController(path: storageInfo[0].rootDir),
-
                           rootDirectory: Directory(storageInfo[0].rootDir),
                           action:
                               (BuildContext context, Directory folder) async {
-                            print("Picked directory $folder");
                             setState(() {
                               currentFolder = folder;
                             });

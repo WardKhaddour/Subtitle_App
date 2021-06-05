@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import '../helpers/check_internet.dart';
+import '../helpers/subtitle_info.dart';
 import '../providers/imdb_provider.dart';
 import 'no_intenet.dart';
 
 class SubtitleView extends StatefulWidget {
-  final String name;
-  final String url;
-  final String size;
-  SubtitleView(
-    this.name,
-    this.url,
-    this.size,
-  );
-
+  final SubtitleInfo subtitleInfo;
+  SubtitleView(this.subtitleInfo);
   @override
   _SubtitleViewState createState() => _SubtitleViewState();
 }
@@ -36,7 +30,7 @@ class _SubtitleViewState extends State<SubtitleView> {
         child: _isDownloading == false
             ? ListTile(
                 subtitle: Text(
-                  '${(double.tryParse(widget.size) / 1024).toStringAsFixed(2)} KB',
+                  '${(double.tryParse(widget.subtitleInfo.size) / 1024).toStringAsFixed(2)} KB',
                 ),
                 trailing: _downloaded == false
                     ? IconButton(
@@ -51,7 +45,8 @@ class _SubtitleViewState extends State<SubtitleView> {
                             if (isConnected) {
                               await Provider.of<IMDBProvider>(context,
                                       listen: false)
-                                  .downloadSub(widget.url, widget.name);
+                                  .downloadSub(widget.subtitleInfo.downloadUrl,
+                                      widget.subtitleInfo.name);
                               setState(() {
                                 _isDownloading = false;
                               });
@@ -93,7 +88,9 @@ class _SubtitleViewState extends State<SubtitleView> {
                                   () async {
                                     await Provider.of<IMDBProvider>(context,
                                             listen: false)
-                                        .downloadSub(widget.url, widget.name);
+                                        .downloadSub(
+                                            widget.subtitleInfo.downloadUrl,
+                                            widget.subtitleInfo.name);
                                     setState(() {
                                       _isDownloading = false;
                                     });
@@ -104,14 +101,12 @@ class _SubtitleViewState extends State<SubtitleView> {
                                 ),
                               );
                             }
-                          } catch (e) {
-                            print('subtitle view error $e');
-                          }
+                          } catch (e) {}
                         },
                       )
                     : Icon(Icons.check),
                 title: Text(
-                  widget.name,
+                  widget.subtitleInfo.name,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 15,
@@ -130,11 +125,6 @@ class _SubtitleViewState extends State<SubtitleView> {
       ),
       width: double.infinity,
       height: 90,
-      // decoration: BoxDecoration(
-      //   borderRadius: BorderRadius.only(
-      //     topRight: Radius.circular(30),
-      //     bottomLeft: Radius.circular(30),
-      //   ),
       color: Colors.green,
     );
   }

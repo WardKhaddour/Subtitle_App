@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../helpers/check_internet.dart';
-import './my_container.dart';
 import './error_message.dart';
 import '../providers/imdb_provider.dart';
 import '../providers/input_provider.dart';
@@ -28,7 +27,6 @@ class _SearchTypeState extends State<SearchType> {
   }
 
   Future<void> search() async {
-    print('search name $name');
     bool isConnected = await CheckInternet.checkInternet();
     if (isConnected) {
       await Provider.of<IMDBProvider>(context, listen: false)
@@ -41,8 +39,6 @@ class _SearchTypeState extends State<SearchType> {
             error: Provider.of<IMDBProvider>(context).error,
           ),
         );
-        print('finish search');
-        // Provider.of<IMDBProvider>(context, listen: false).clear();
       }
     } else {
       showDialog(
@@ -56,12 +52,6 @@ class _SearchTypeState extends State<SearchType> {
       );
     }
   }
-
-  // void clear() {
-  //   name = null;
-  //   season = null;
-  //   episode = null;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -79,12 +69,12 @@ class _SearchTypeState extends State<SearchType> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyContainer(
-                    isReversed: false,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 6,
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
                           child: TypeAheadField(
                             textFieldConfiguration: TextFieldConfiguration(
                               controller: nameController,
@@ -93,7 +83,17 @@ class _SearchTypeState extends State<SearchType> {
                                   TextStyle(color: Colors.green, fontSize: 16),
                               textAlign: TextAlign.start,
                               decoration: InputDecoration(
-                                border: InputBorder.none,
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.green,
+                                    width: 2,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey,
+                                  ),
+                                ),
                                 hintText:
                                     Provider.of<IMDBProvider>(context).isMovie
                                         ? 'Enter Movie Name'
@@ -104,7 +104,6 @@ class _SearchTypeState extends State<SearchType> {
                                 ),
                               ),
                               onChanged: (value) {
-                                // name = value;
                                 nameController.text = value;
                                 nameController.selection =
                                     TextSelection.fromPosition(TextPosition(
@@ -115,15 +114,9 @@ class _SearchTypeState extends State<SearchType> {
                             animationStart: 0.5,
                             suggestionsBoxDecoration: SuggestionsBoxDecoration(
                               shadowColor: Colors.grey,
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(30),
-                                bottomLeft: Radius.circular(30),
-                              ),
-                              offsetX: 0.0,
+                              color: Colors.white.withOpacity(0.6),
                             ),
                             onSuggestionSelected: (selectedName) {
-                              print(selectedName);
                               setState(
                                 () {
                                   nameController.text = selectedName;
@@ -133,17 +126,29 @@ class _SearchTypeState extends State<SearchType> {
                               );
                               search();
                             },
+                            noItemsFoundBuilder: (context) {
+                              return Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Text(
+                                  'No Items Found!',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.red.shade300,
+                                  ),
+                                ),
+                              );
+                            },
                             itemBuilder: (context, suggestion) {
                               return Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.all(15.0),
                                     child: Text(
                                       suggestion,
                                       style: TextStyle(
-                                        fontSize: 25,
+                                        fontSize: 18,
                                         color: Colors.green,
                                       ),
                                     ),
@@ -157,22 +162,25 @@ class _SearchTypeState extends State<SearchType> {
                             },
                           ),
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.clear,
-                              color: Colors.green,
-                            ),
-                            onPressed: () {
-                              prov.clear();
-                              Provider.of<IMDBProvider>(context, listen: false)
-                                  .clear();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      (name != null && name != '')
+                          ? Expanded(
+                              flex: 1,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: Colors.green,
+                                ),
+                                onPressed: () {
+                                  prov.clear();
+                                  Provider.of<IMDBProvider>(context,
+                                          listen: false)
+                                      .clear();
+                                },
+                              ),
+                            )
+                          : SizedBox(),
+                    ],
                   ),
                   Provider.of<IMDBProvider>(context, listen: false).isMovie
                       ? SingleChildScrollView(
@@ -204,8 +212,8 @@ class _SearchTypeState extends State<SearchType> {
                             Row(
                               children: <Widget>[
                                 Expanded(
-                                  child: MyContainer(
-                                    isReversed: true,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
                                     child: Form(
                                       child: TextFormField(
                                         validator: (value) {
@@ -220,7 +228,17 @@ class _SearchTypeState extends State<SearchType> {
                                         style: TextStyle(color: Colors.green),
                                         textAlign: TextAlign.center,
                                         decoration: InputDecoration(
-                                          border: InputBorder.none,
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.green,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                           hintText: 'Season',
                                           hintStyle: TextStyle(
                                             color: Colors.grey,
@@ -236,9 +254,12 @@ class _SearchTypeState extends State<SearchType> {
                                     ),
                                   ),
                                 ),
+                                SizedBox(
+                                  width: 20,
+                                ),
                                 Expanded(
-                                  child: MyContainer(
-                                    isReversed: true,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
                                     child: Form(
                                       child: TextFormField(
                                         controller: episodeController,
@@ -253,7 +274,17 @@ class _SearchTypeState extends State<SearchType> {
                                         style: TextStyle(color: Colors.green),
                                         textAlign: TextAlign.center,
                                         decoration: InputDecoration(
-                                          border: InputBorder.none,
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.green,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                           hintText: 'Episode',
                                           hintStyle: TextStyle(
                                             color: Colors.grey,
@@ -296,11 +327,6 @@ class _SearchTypeState extends State<SearchType> {
                             ),
                           ],
                         ),
-                  // Image(
-                  //   image: AssetImage(
-                  //     'assets/images/tasqment-logo.jpg',
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -311,17 +337,6 @@ class _SearchTypeState extends State<SearchType> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Padding(
-                //   padding: const EdgeInsets.all(15.0),
-                //   child: Card(
-                //     margin: EdgeInsets.all(20),
-                //     color: Colors.greenAccent,
-                //     child: Text(
-                //       'Find Subtitle',
-                //       style: TextStyle(fontSize: 20),
-                //     ),
-                //   ),
-                // ),
                 Card(
                   margin: EdgeInsets.all(10),
                   child: TextButton(
@@ -354,12 +369,6 @@ class _SearchTypeState extends State<SearchType> {
                     ),
                   ),
                 ),
-
-                // Image(
-                //   image: AssetImage(
-                //     'assets/images/tasqment-logo.jpg',
-                //   ),
-                // ),
               ],
             ),
           );

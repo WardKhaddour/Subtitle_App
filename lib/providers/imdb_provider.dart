@@ -1,12 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_3_subtitle_app/service/omdb_api.dart';
+import 'package:task_3_subtitle_app/service/subtitle_sevice.dart';
+import '../helpers/subtitle_info.dart';
 
 enum SubTypes {
   Movie,
@@ -14,11 +15,9 @@ enum SubTypes {
 }
 
 class IMDBProvider with ChangeNotifier {
-  String id;
+  OmdbApi omdbApi = OmdbApi();
+  SubtitleService subtitleService = SubtitleService();
   String error;
-  // String subDownloadLink;
-  // String subtitlesLink;
-  // String subFileName;
   String language = 'ara';
   bool hasSub = false;
   bool isMovie;
@@ -26,9 +25,7 @@ class IMDBProvider with ChangeNotifier {
   bool hasPath = false;
   SubTypes searchType = SubTypes.Movie;
   List<dynamic> responseBody;
-  List<String> subFilesLinks;
-  List<String> subFilesNames;
-  List<String> subFilesSizes;
+  List<SubtitleInfo> subtitleInfo = [];
   String normalPath;
   String userPath;
   void setToMovie() {
@@ -44,10 +41,7 @@ class IMDBProvider with ChangeNotifier {
   }
 
   void clear() {
-    subFilesNames = [];
-    subFilesLinks = [];
-    subFilesSizes = [];
-    id = null;
+    subtitleInfo = [];
     error = null;
     responseBody = null;
     notifyListeners();
@@ -55,10 +49,6 @@ class IMDBProvider with ChangeNotifier {
 
   Future<void> setNormalPath() async {
     Directory dir = await DownloadsPathProvider.downloadsDirectory;
-    // Directory finaldir = Directory('${dir.path}/' 'subs/');
-    // if (await finaldir.exists() == false) {
-    //   finaldir.create();
-    // }
     normalPath = dir.path;
   }
 
@@ -70,7 +60,6 @@ class IMDBProvider with ChangeNotifier {
 
   Future<void> tryGetiingPath() async {
     final pref = await SharedPreferences.getInstance();
-
     if (pref.containsKey('settings')) {
       hasPath = true;
       userPath = pref.getString('settings');
@@ -97,135 +86,59 @@ class IMDBProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getId(String name) async {
-    const apiKey = '1c9d8247';
-    final url = 'http://www.omdbapi.com/?t=$name&apikey=$apiKey';
-    try {
-      final response = await http.get(Uri.parse(url));
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      id = extractedData['imdbID'];
-      print('id=${id.toString()}');
-    } catch (e) {
-      print('error $e');
-      error = 'Be ensure of movie name';
+  Future<String> getId(String name) async {
+    final ids = await omdbApi.getId(name);
+    hasSub = ids.isNotEmpty;
+    if (ids.isNotEmpty) {
+      return ids;
+    } else {
+      return 'error';
     }
   }
 
   Future<void> getData(String name, String season, String episode) async {
     try {
       if (!isMovie && (episode == null || season == null) || name == null) {
-        print('error if statement');
         error = 'Invalid Input';
         return;
       }
-      print('isLoading');
       toggleLoading();
-      print('getting data');
-      await getId(name);
-      print('finish getting data');
-      isMovie ? await getMovieSub(id) : await getTvShowSub(id, season, episode);
+      final String id = await getId(name);
+      isMovie ? await getMovieSub(id) : await getTvShowSub(season, episode, id);
       toggleLoading();
       notifyListeners();
     } catch (e) {
-      print('error getting data!');
       error = 'Network Error';
     }
   }
 
   Future<void> getMovieSub(id) async {
-    try {
-      HttpClient client = HttpClient();
-      client.userAgent = 'obadasub';
-      final url =
-          'http://rest.opensubtitles.org/search/imdbid-$id/sublanguageid-$language';
-      HttpClientRequest request = await client.getUrl(Uri.parse(url));
-      HttpClientResponse response = await request.close();
-      var result = StringBuffer();
-      await for (var contents in response.transform(Utf8Decoder())) {
-        result.write(contents);
-      }
-      subFilesLinks = [];
-      subFilesNames = [];
-      subFilesSizes = [];
-      responseBody = json.decode(result.toString());
-      for (var obj in responseBody) {
-        subFilesNames.add(obj['SubFileName']);
-        subFilesLinks.add(obj['SubDownloadLink']);
-        subFilesSizes.add(obj['SubSize']);
-      }
-      print('get movie sub $responseBody');
-      print('zip ${responseBody[0]['SubDownloadLink']}');
-      print('str ${responseBody[0]['SubtitlesLink']}');
-      // subDownloadLink = responseBody[0]['SubDownloadLink'];
-      // subtitlesLink = responseBody[0]['SubtitlesLink'];
-      // subFileName = responseBody[0]['SubFileName'];
-      hasSub = true;
-    } catch (e) {
-      error = 'Network Error';
-      print('get movie sub $error');
-    }
+    final res = await subtitleService.getMovieSub(id, language);
+    //
+    subtitleInfo = res ?? [];
   }
 
-  Future<void> getTvShowSub(
-      String showName, String season, String episode) async {
-    print("getTvSub");
-    try {
-      HttpClient client = HttpClient();
-      client.userAgent = 'obadasub';
-
-      HttpClientRequest request = await client.getUrl(Uri.parse(
-          "https://rest.opensubtitles.org/search/episode-$episode/imdbid-$id/season-$season/sublanguageid-$language"));
-      HttpClientResponse response = await request.close();
-
-      var result = StringBuffer();
-      await for (var contents in response.transform(Utf8Decoder())) {
-        result.write(contents);
-      }
-      subFilesLinks = [];
-      subFilesNames = [];
-      subFilesSizes = [];
-      responseBody = jsonDecode(result.toString());
-      for (var obj in responseBody) {
-        subFilesNames.add(obj['SubFileName']);
-        subFilesLinks.add(obj['SubDownloadLink']);
-      }
-      print(responseBody);
-      // print('get movie sub $responseBody');
-      // print('zip ${responseBody[0]['SubDownloadLink']}');
-      // print('str ${responseBody[0]['SubtitlesLink']}');
-      // subDownloadLink = responseBody[0]['SubDownloadLink'];
-      // subtitlesLink = responseBody[0]['SubtitlesLink'];
-      // subFileName = responseBody[0]['SubFileName'];
-      hasSub = true;
-    } catch (e) {
-      print(e.toString());
-      error = 'Network Error';
-    }
+  Future<void> getTvShowSub(String season, String episode, String id) async {
+    final res = await subtitleService.getTvShowSub(
+        season: season, episode: episode, id: id, language: language);
+    subtitleInfo = res ?? [];
   }
 
   Future<void> downloadSub(String url, String name) async {
-    print('url $url');
     try {
       final per = await Permission.storage.request();
       if (per.isDenied) {
         throw 'We need Storage Permission';
-        // await Permission.storage.request();
       }
       await tryGetiingPath();
       if (!hasPath) {
         await setNormalPath();
       }
-      print("normalPath $normalPath");
       String finalPath = userPath == null ? normalPath : userPath;
-      print('final path $finalPath');
-      print(1);
       Dio dio = Dio();
-      print(2);
       await dio.download(url, finalPath + '/$name');
-      print('Done');
       notifyListeners();
     } catch (e) {
-      print('error ${e.toString()}');
       error = 'Permission not allowed';
       throw e;
     }
